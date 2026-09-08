@@ -3,7 +3,7 @@ import Navbar from './shared/Navbar';
 import { Button } from './ui/button';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Search } from 'lucide-react';
+import { Search, Linkedin, Github, Instagram,  } from 'lucide-react';
 import { setSearchedQuery } from '@/redux/jobSlice';
 import { motion } from 'framer-motion';
 
