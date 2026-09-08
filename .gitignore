@@ -1,0 +1,6 @@
+node_modules
+.env
+changesTObeMade.md
+SYSTEM_DESIGN.md
+backend/download.jpg
+backend/run.sh
