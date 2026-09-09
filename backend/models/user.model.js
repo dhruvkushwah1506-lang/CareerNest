@@ -23,6 +23,12 @@ const userSchema=new mongoose.Schema({
         enum:['Student','Recruiter'],
         required:true
     },
+    resetPasswordToken:{
+        type:String
+    },
+    resetPasswordExpires:{
+        type:Date
+    },
     profile:{
         bio:{
             type:String,

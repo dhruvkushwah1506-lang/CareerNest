@@ -2,9 +2,11 @@
 import Users from '../models/user.model.js';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import getDataUri from '../utils/datauri.js';
 import cloudinary from '../utils/cloudinary.js';
 import { verifyTurnstileToken } from '../utils/verifyCaptcha.js';
+import { sendPasswordResetEmail } from '../utils/sendEmail.js';
 
 export const register = async (req, res) => {
     try {
@@ -182,5 +184,88 @@ export const updateProfile = async (req, res) => {
     } catch (err) {
         console.error('Profile update error:', err);
         return res.status(500).json({ msg: 'Internal server error' })
+    }
+}
+
+// Step 1: user submits their email, we generate a token and email them a reset link
+export const forgotPassword = async (req, res) => {
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ msg: 'Email is required', success: false });
+        }
+
+        const user = await Users.findOne({ email });
+        // Always respond the same way whether the user exists or not,
+        // so people can't use this to check which emails are registered.
+        if (!user) {
+            return res.status(200).json({
+                msg: 'If an account exists for that email, a reset link has been sent.',
+                success: true
+            });
+        }
+
+        const rawToken = crypto.randomBytes(32).toString('hex');
+        const hashedToken = crypto.createHash('sha256').update(rawToken).digest('hex');
+
+        user.resetPasswordToken = hashedToken;
+        user.resetPasswordExpires = Date.now() + 30 * 60 * 1000; // 30 minutes
+        await user.save();
+
+        const resetUrl = `${process.env.FRONTEND_URL || 'http://localhost:5173'}/reset-password/${rawToken}`;
+
+        try {
+            await sendPasswordResetEmail(user.email, resetUrl);
+        } catch (emailErr) {
+            user.resetPasswordToken = undefined;
+            user.resetPasswordExpires = undefined;
+            await user.save();
+            console.error('Failed to send reset email:', emailErr);
+            return res.status(503).json({ msg: 'Could not send reset email. Please try again later.', success: false });
+        }
+
+        return res.status(200).json({
+            msg: 'If an account exists for that email, a reset link has been sent.',
+            success: true
+        });
+
+    } catch (err) {
+        console.error('Forgot password error:', err);
+        return res.status(500).json({ msg: 'Internal server error', success: false });
+    }
+}
+
+// Step 2: user clicks the emailed link and submits a new password + the token from the URL
+export const resetPassword = async (req, res) => {
+    try {
+        const { token, newPassword } = req.body;
+        if (!token || !newPassword) {
+            return res.status(400).json({ msg: 'Token and new password are required', success: false });
+        }
+        if (newPassword.length < 8) {
+            return res.status(400).json({ msg: 'Password must be at least 8 characters long', success: false });
+        }
+
+        const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+        const user = await Users.findOne({
+            resetPasswordToken: hashedToken,
+            resetPasswordExpires: { $gt: Date.now() }
+        });
+
+        if (!user) {
+            return res.status(400).json({ msg: 'This reset link is invalid or has expired. Please request a new one.', success: false });
+        }
+
+        user.password = await bcrypt.hash(newPassword, 10);
+        user.resetPasswordToken = undefined;
+        user.resetPasswordExpires = undefined;
+        await user.save();
+
+        return res.status(200).json({ msg: 'Password reset successfully. You can now log in.', success: true });
+
+    } catch (err) {
+        console.error('Reset password error:', err);
+        return res.status(500).json({ msg: 'Internal server error', success: false });
     }
 }

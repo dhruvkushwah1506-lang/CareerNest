@@ -6,6 +6,8 @@ import Home from "./components/Home"
 import SplashScreen from "./components/shared/SplashScreen.jsx"
 import SignUp from "./components/auth/SignUp.jsx"
 import Login from "./components/auth/Login.jsx"
+import ForgotPassword from "./components/auth/ForgotPassword.jsx"
+import ResetPassword from "./components/auth/ResetPassword.jsx"
 import Jobs from "./components/Jobs.jsx"
 import Browse from "./components/Browse.jsx"
 import AdminJobs from "./components/admin/AdminJobs.jsx"
@@ -91,6 +93,14 @@ function App() {
     {
       path:'/login',
       element:<Login/>
+    },
+    {
+      path:'/forgot-password',
+      element:<ForgotPassword/>
+    },
+    {
+      path:'/reset-password/:token',
+      element:<ResetPassword/>
     }
   ])
   return (

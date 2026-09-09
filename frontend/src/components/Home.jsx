@@ -3,7 +3,7 @@ import Navbar from './shared/Navbar';
 import { Button } from './ui/button';
 import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Search, Linkedin, Github, Instagram,  } from 'lucide-react';
+import { Search, Linkedin, Github, Instagram } from 'lucide-react';
 import { setSearchedQuery } from '@/redux/jobSlice';
 import { motion } from 'framer-motion';
 
@@ -169,32 +169,38 @@ const Home = () => {
         <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center justify-between text-sm">
           <p>© 2026 CareerNest. All rights reserved.</p>
           <div className="flex gap-6 mt-4 md:mt-0 font-medium">
-          <a
-  href="https://www.linkedin.com/in/opt%C3%AFm%C3%BCs-kushwah-63181640a"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="hover:text-foreground transition-colors"
->
-  LinkedIn
-</a>
+            <motion.a
+              href="https://www.linkedin.com/in/opt%C3%AFm%C3%BCs-kushwah-63181640a"
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ y: -2 }}
+              className="flex items-center gap-1.5 hover:text-foreground transition-colors"
+            >
+              <Linkedin className="h-4 w-4" />
+              LinkedIn
+            </motion.a>
 
-<a
-  href="https://github.com/dhruvkushwah1506-lang"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="hover:text-foreground transition-colors"
->
-  GitHub
-</a>
+            <motion.a
+              href="https://github.com/dhruvkushwah1506-lang"
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ y: -2 }}
+              className="flex items-center gap-1.5 hover:text-foreground transition-colors"
+            >
+              <Github className="h-4 w-4" />
+              GitHub
+            </motion.a>
 
-<a
-  href="https://www.instagram.com/dhruv__kushwah_/"
-  target="_blank"
-  rel="noopener noreferrer"
-  className="hover:text-foreground transition-colors"
->
-  Instagram
-</a>
+            <motion.a
+              href="https://www.instagram.com/dhruv__kushwah_/"
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ y: -2 }}
+              className="flex items-center gap-1.5 hover:text-foreground transition-colors"
+            >
+              <Instagram className="h-4 w-4" />
+              Instagram
+            </motion.a>
           </div>
         </div>
       </footer>
