@@ -37,6 +37,6 @@ export const sendPasswordResetEmail = async (toEmail, resetUrl) => {
 
     if (!response.ok) {
         const errBody = await response.text().catch(() => '');
-        throw new Error(Brevo request failed (${response.status}): ${errBody});
+        throw new Error('Brevo request failed (${response.status}): ${errBody}');
     }
 };
